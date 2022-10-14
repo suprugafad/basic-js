@@ -1,5 +1,4 @@
 const { NotImplementedError } = require('../extensions/index.js');
-const CustomError = require("../extensions/custom-error");
 /**
  * Create transformed array based on the control sequences that original
  * array contains
