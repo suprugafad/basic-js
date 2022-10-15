@@ -21,44 +21,66 @@ const LETTERS_IN_ALPHABET = 26;
  * 
  */
 class VigenereCipheringMachine {
-  constructor (type) {
-    this.reverseType = type === false;
+  constructor(reverse = true) {
+    this.reverse = reverse;
+    this.table = [];
+    this.alphvt = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    this.build(this.alphvt);
+    console.log(this.table);
   }
 
-  encrypt (message, key) {
-    if (message === undefined || key === undefined) {
-      throw new Error()
+  build(str) {
+    for (let i = 0; i < str.length; i++) {
+      this.table.push(str.slice(i, str.length) + str.slice(0, i));
     }
-
-    let shift = 0;
-    key = key.toUpperCase().split``.map(c => c.charCodeAt(0) - CODE_OF_A);
-    message = message
-        .toUpperCase()
-        .split``
-        .map((item, i) => (/[A-Z]/.test(item))
-            ? String.fromCharCode((item.charCodeAt(0) - CODE_OF_A + key[(i - shift) % key.length])
-                % LETTERS_IN_ALPHABET + CODE_OF_A)
-            : (shift++, item));
-
-    return this.reverseType ? message.reverse().join`` : message.join``;
   }
 
-  decrypt (message, key) {
-    if (message === undefined || key === undefined) {
-      throw new Error()
+  encrypt(str, code) {
+
+    if (!str || !code) throw new Error('Incorrect arguments!');
+
+    let res = "";
+    let pivot = 0;
+
+    for (let i = 0 ; i < str.length; i++) {
+      if (this.alphvt.includes(str[i].toUpperCase())) {
+        let x = this.alphvt.indexOf(str[i].toUpperCase());
+        let y = this.alphvt.indexOf(code[pivot].toUpperCase());
+        res += this.table[y][x];
+        pivot++;
+        if (pivot >= code.length) pivot = 0;
+      } else {
+        res += str[i];
+      }
     }
+    if (!this.reverse) {
+      return res.split("").reverse().join("");
+    }
+    return res;
+  }
 
-    let shift = 0;
-    key = key.toUpperCase().split``.map(c => c.charCodeAt(0) - CODE_OF_A);
-    message = message
-        .toUpperCase()
-        .split``
-        .map((item, i) => (/[A-Z]/.test(item))
-            ? String.fromCharCode((item.charCodeAt(0) - CODE_OF_A + LETTERS_IN_ALPHABET - key[(i - shift) % key.length])
-                % LETTERS_IN_ALPHABET + CODE_OF_A)
-            : (shift++, item));
+  decrypt(str, code) {
 
-    return this.reverseType ? message.reverse().join`` : message.join``;
+    if (!str || !code) throw new Error('Incorrect arguments!');
+
+    let res = "";
+    let pivot = 0;
+
+    for (let i = 0 ; i < str.length; i++) {
+      if (this.alphvt.includes(str[i].toUpperCase())) {
+        let y = this.alphvt.indexOf(code[pivot].toUpperCase());
+        let x = this.table[y].indexOf(str[i].toUpperCase());
+        res += this.alphvt[x];
+        pivot++;
+        if (pivot >= code.length) pivot = 0;
+      } else {
+        res += str[i];
+      }
+    }
+    if (!this.reverse) {
+      return res.split("").reverse().join("");
+    }
+    return res;
   }
 }
 
